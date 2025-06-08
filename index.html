@@ -2,430 +2,407 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🦠 Antibiotic Match Game - Step 2 Edition</title>
+  <title>🦠 Antibiotic Match Game</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand&display=swap');
-
+    @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
     body {
-      font-family: 'Quicksand', sans-serif;
-      background: #d0f0c0; /* pastel green */
-      color: #2c3e50;
+      font-family: 'Press Start 2P', cursive, monospace;
+      background: #b8e6c0; /* pastel green */
       text-align: center;
       padding: 2rem;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      background-image: radial-gradient(circle at center, #b0db99 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-
-    h1 {
-      font-family: 'Fredoka One', cursive;
-      color: #2e7d32; /* darker green */
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px 0 #a3c293;
+      color: #2a3a1a;
       user-select: none;
     }
-
+    .card {
+      background: #f5f9f0;
+      border-radius: 16px;
+      padding: 2rem;
+      margin: auto;
+      max-width: 600px;
+      box-shadow:
+        0 2px 5px #8fbc8f,
+        inset 0 0 20px #d4f0c0;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    .option {
+      display: block;
+      padding: 14px 18px;
+      margin: 0.6rem auto;
+      background: #d4f0c0;
+      border: 3px solid #7aad66;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 90%;
+      font-size: 12px;
+      font-weight: bold;
+      color: #2a3a1a;
+      transition: background-color 0.3s, border-color 0.3s;
+      box-shadow: 2px 2px 0 #a5c587;
+      user-select: none;
+    }
+    .option:hover {
+      background-color: #a9d18e;
+      border-color: #559933;
+    }
+    .option.selected {
+      background-color: #7aad66;
+      color: white;
+      border-color: #476b39;
+      box-shadow: none;
+    }
+    .correct {
+      background-color: #90ee90 !important; /* light green */
+      border-color: #387738 !important;
+      color: #1d3a1d !important;
+      box-shadow: none !important;
+    }
+    .incorrect {
+      background-color: #f08080 !important; /* light red */
+      border-color: #a23232 !important;
+      color: #5a1a1a !important;
+      box-shadow: none !important;
+    }
+    .score {
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 16px;
+      color: #375830;
+      letter-spacing: 1.5px;
+    }
     .filters {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       margin-bottom: 1.5rem;
       gap: 1rem;
-      max-width: 600px;
     }
     .filters label {
-      background: #a8d5a8;
+      background: #d4f0c0;
+      border: 3px solid #7aad66;
+      border-radius: 12px;
       padding: 8px 14px;
-      border-radius: 20px;
+      font-size: 11px;
+      font-weight: bold;
       cursor: pointer;
       user-select: none;
-      font-weight: 600;
-      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-      transition: background 0.3s ease;
+      box-shadow: 2px 2px 0 #a5c587;
+      transition: background-color 0.3s, border-color 0.3s;
     }
     .filters input[type="checkbox"] {
-      display: none;
-    }
-    .filters input[type="checkbox"]:checked + label {
-      background: #68b568;
-      color: white;
-      box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
-    }
-
-    button.filter-btn {
-      background: #81c784;
-      border: none;
-      padding: 12px 30px;
-      font-size: 1.1rem;
-      border-radius: 30px;
-      font-weight: 700;
-      color: white;
+      margin-right: 6px;
+      transform: scale(1.2);
+      vertical-align: middle;
       cursor: pointer;
-      box-shadow: 0 5px #5a9a56;
-      transition: background 0.3s ease;
-      margin-bottom: 2rem;
+    }
+    .filters input[type="checkbox"]:checked + span,
+    .filters input[type="checkbox"]:checked + label {
+      background-color: #7aad66;
+      border-color: #476b39;
+      color: white;
+      box-shadow: none;
+    }
+    button.filter-btn {
+      background: #a5d28d;
+      border: 3px solid #598a36;
+      border-radius: 14px;
+      padding: 14px 24px;
+      font-family: 'Press Start 2P', cursive, monospace;
+      font-size: 14px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 #6f9d44;
+      color: #2a3a1a;
+      margin-bottom: 1.5rem;
       user-select: none;
-      font-family: 'Fredoka One', cursive;
+      transition: background-color 0.3s, border-color 0.3s;
     }
     button.filter-btn:hover {
-      background: #6aae60;
+      background-color: #89c35c;
+      border-color: #3d6821;
+      color: #122100;
     }
-    button.filter-btn:active {
-      box-shadow: 0 2px #5a9a56;
-      transform: translateY(3px);
-    }
-
-    .card {
-      background: #f9fff9;
-      border-radius: 20px;
-      padding: 2rem 2.5rem;
-      margin: auto;
-      max-width: 520px;
-      box-shadow: 5px 5px 10px #a3c293;
-      font-size: 1.2rem;
-      min-height: 220px;
-      user-select: none;
-    }
-
-    .answer-btn {
-      background: #dcedc8;
-      border: none;
-      border-radius: 15px;
-      padding: 14px;
-      margin: 0.8rem auto;
-      width: 85%;
-      max-width: 400px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #33691e;
-      box-shadow: 3px 3px 6px #a3c293;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      font-family: 'Quicksand', sans-serif;
-    }
-    .answer-btn:hover {
-      background: #aed581;
-    }
-    .answer-btn:active {
-      transform: translateY(2px);
-      box-shadow: 1px 1px 3px #81c784;
-    }
-
-    .correct {
-      background-color: #a5d6a7 !important;
-      color: #1b5e20 !important;
-      font-weight: 700;
-      border-radius: 15px;
-      padding: 1rem;
-      box-shadow: 0 0 8px #4caf50;
-      user-select: none;
-    }
-    .incorrect {
-      background-color: #ef9a9a !important;
-      color: #b71c1c !important;
-      font-weight: 700;
-      border-radius: 15px;
-      padding: 1rem;
-      box-shadow: 0 0 8px #e53935;
-      user-select: none;
-    }
-
-    .score {
-      margin-top: 1.5rem;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #33691e;
-      user-select: none;
-      font-family: 'Fredoka One', cursive;
-      text-shadow: 1px 1px 0 #a3c293;
-    }
-
     img {
-      width: 70px;
-      margin-bottom: 1.2rem;
-      filter: drop-shadow(1px 1px 1px #a3c293);
-      user-select: none;
-    }
-
-    /* Responsive */
-    @media (max-width: 600px) {
-      .filters {
-        gap: 0.6rem;
-      }
-      .answer-btn, .filter-btn {
-        width: 95%;
-        font-size: 1rem;
-      }
-      .card {
-        padding: 1.5rem 1.8rem;
-        font-size: 1.1rem;
-      }
+      width: 80px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(1px 1px 1px #88a06a);
     }
   </style>
 </head>
 <body>
 
-  <img src="microbe-pixel.png" alt="Cute microbe mascot" />
-  <h1>🦠 Antibiotic Match Game - Step 2 Edition</h1>
-
-  <div class="filters">
-    <input type="checkbox" id="beta-lactam" value="Beta-lactam" />
-    <label for="beta-lactam">Beta-lactams</label>
-
-    <input type="checkbox" id="macrolide" value="Macrolide" />
-    <label for="macrolide">Macrolides</label>
-
-    <input type="checkbox" id="carbapenem" value="Carbapenem" />
-    <label for="carbapenem">Carbapenems</label>
-
-    <input type="checkbox" id="glycopeptide" value="Glycopeptide" />
-    <label for="glycopeptide">Glycopeptides</label>
-
-    <input type="checkbox" id="lincosamide" value="Lincosamide" />
-    <label for="lincosamide">Lincosamides</label>
-
-    <input type="checkbox" id="tetracycline" value="Tetracycline" />
-    <label for="tetracycline">Tetracyclines</label>
-
-    <input type="checkbox" id="fluoroquinolone" value="Fluoroquinolone" />
-    <label for="fluoroquinolone">Fluoroquinolones</label>
+  <img src="microbe-pixel.png" alt="Microbe Mascot" />
+  <h1>🦠 Antibiotic Match Game</h1>
+  <div class="filters" id="class-filters">
+    <label><input type="checkbox" value="Beta-lactam (Aminopenicillin)" /> Beta-lactams (Aminopenicillin)</label>
+    <label><input type="checkbox" value="Glycopeptide" /> Glycopeptides</label>
+    <label><input type="checkbox" value="Lincosamide" /> Lincosamides</label>
+    <label><input type="checkbox" value="1st Gen Cephalosporin" /> 1st Gen Cephalosporins</label>
+    <label><input type="checkbox" value="3rd Gen Cephalosporin" /> 3rd Gen Cephalosporins</label>
+    <label><input type="checkbox" value="4th Gen Cephalosporin" /> 4th Gen Cephalosporins</label>
+    <label><input type="checkbox" value="Macrolide" /> Macrolides</label>
+    <label><input type="checkbox" value="Beta-lactam + Beta-lactamase inhibitor" /> Beta-lactam + Beta-lactamase inhibitor</label>
+    <label><input type="checkbox" value="Carbapenem" /> Carbapenems</label>
   </div>
-
-  <button class="filter-btn" onclick="startGame()">Start Game with Selected Classes</button>
-
+  <button class="filter-btn" onclick="startGame()">Start Game with Selected Class</button>
   <div class="card" id="game"></div>
   <p class="score" id="score">Score: 0</p>
 
-<script>
-  const antibiotics = [
-    {
-      name: "Amoxicillin",
-      class: "Beta-lactam",
-      covers: ["Gram-positive cocci", "Gram-negative rods"],
-      mechanism: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
-      sideEffects: "Allergic reactions, rash, diarrhea",
-    },
-    {
-      name: "Cefazolin",
-      class: "Beta-lactam",
-      covers: ["Gram-positive cocci"],
-      mechanism: "1st gen cephalosporin; inhibits cell wall synthesis",
-      sideEffects: "Hypersensitivity reactions, possible cross-reactivity with penicillins",
-    },
-    {
-      name: "Ceftriaxone",
-      class: "Beta-lactam",
-      covers: ["Gram-negative rods", "Neisseria"],
-      mechanism: "3rd gen cephalosporin; inhibits cell wall synthesis",
-      sideEffects: "Biliary sludging, hypersensitivity",
-    },
-    {
-      name: "Piperacillin-tazobactam",
-      class: "Beta-lactam",
-      covers: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes", "Pseudomonas"],
-      mechanism: "Extended-spectrum penicillin + beta-lactamase inhibitor",
-      sideEffects: "Allergic reactions, possible thrombocytopenia",
-    },
-    {
-      name: "Meropenem",
-      class: "Carbapenem",
-      covers: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes", "Pseudomonas"],
-      mechanism: "Broad-spectrum beta-lactam; inhibits cell wall synthesis; resistant to beta-lactamases",
-      sideEffects: "Seizures at high doses, GI upset",
-    },
-    {
-      name: "Vancomycin",
-      class: "Glycopeptide",
-      covers: ["Gram-positive cocci", "MRSA"],
-      mechanism: "Inhibits cell wall synthesis by binding D-Ala-D-Ala terminus",
-      sideEffects: "Nephrotoxicity, ototoxicity, 'Red man syndrome'",
-    },
-    {
-      name: "Azithromycin",
-      class: "Macrolide",
-      covers: ["Atypicals"],
-      mechanism: "Inhibits 50S ribosomal subunit, blocking protein synthesis",
-      sideEffects: "GI upset, QT prolongation",
-    },
-    {
-      name: "Clindamycin",
-      class: "Lincosamide",
-      covers: ["Gram-positive cocci", "Anaerobes"],
-      mechanism: "Inhibits 50S ribosomal subunit, blocking protein synthesis",
-      sideEffects: "Clostridioides difficile colitis, rash",
-    },
-    {
-      name: "Doxycycline",
-      class: "Tetracycline",
-      covers: ["Atypicals", "Gram-positive cocci", "Some gram-negative rods"],
-      mechanism: "Binds 30S ribosomal subunit, inhibiting protein synthesis",
-      sideEffects: "Photosensitivity, teeth discoloration in children",
-    },
-    {
-      name: "Levofloxacin",
-      class: "Fluoroquinolone",
-      covers: ["Gram-negative rods", "Atypicals", "Some gram-positive cocci"],
-      mechanism: "Inhibits bacterial DNA gyrase and topoisomerase IV",
-      sideEffects: "Tendonitis, QT prolongation, peripheral neuropathy",
-    },
-  ];
+  <script>
+    const antibiotics = [
+      {
+        name: "Amoxicillin",
+        class: "Beta-lactam (Aminopenicillin)",
+        covers: ["Gram-positive cocci", "Gram-negative rods"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding to penicillin-binding proteins",
+        sideEffects: "Rash, diarrhea, allergic reactions",
+      },
+      {
+        name: "Vancomycin",
+        class: "Glycopeptide",
+        covers: ["Gram-positive cocci", "MRSA"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding D-Ala-D-Ala terminus",
+        sideEffects: "Nephrotoxicity, ototoxicity, red man syndrome",
+      },
+      {
+        name: "Clindamycin",
+        class: "Lincosamide",
+        covers: ["Gram-positive cocci", "Anaerobes"],
+        mechanism: "Inhibits bacterial protein synthesis by binding 50S ribosomal subunit",
+        sideEffects: "Diarrhea, Clostridioides difficile colitis",
+      },
+      {
+        name: "Cefazolin",
+        class: "1st Gen Cephalosporin",
+        covers: ["Gram-positive cocci"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
+        sideEffects: "Hypersensitivity reactions, GI upset",
+      },
+      {
+        name: "Ceftriaxone",
+        class: "3rd Gen Cephalosporin",
+        covers: ["Gram-negative rods", "Neisseria"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
+        sideEffects: "Biliary sludging, hypersensitivity reactions",
+      },
+      {
+        name: "Cefepime",
+        class: "4th Gen Cephalosporin",
+        covers: ["Gram-negative rods", "Pseudomonas"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
+        sideEffects: "Neurotoxicity (rare), hypersensitivity",
+      },
+      {
+        name: "Azithromycin",
+        class: "Macrolide",
+        covers: ["Atypicals"],
+        mechanism: "Inhibits bacterial protein synthesis by binding 50S ribosomal subunit",
+        sideEffects: "GI upset, QT prolongation, liver enzyme elevation",
+      },
+      {
+        name: "Piperacillin-tazobactam",
+        class: "Beta-lactam + Beta-lactamase inhibitor",
+        covers: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes", "Pseudomonas"],
+        mechanism: "Inhibits bacterial cell wall synthesis; beta-lactamase inhibitor protects piperacillin",
+        sideEffects: "Allergic reactions, thrombocytopenia, diarrhea",
+      },
+      {
+        name: "Meropenem",
+        class: "Carbapenem",
+        covers: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes", "Pseudomonas"],
+        mechanism: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
+        sideEffects: "Seizures (rare), allergic reactions",
+      }
+    ];
 
-  const allCoverage = [
-    "Gram-positive cocci",
-    "Gram-negative rods",
-    "Anaerobes",
-    "Pseudomonas",
-    "MRSA",
-    "Neisseria",
-    "Atypicals",
-    "Some gram-negative rods",
-    "Some gram-positive cocci",
-  ];
+    // All possible coverage categories for negative coverage questions
+    const allCoverage = [
+      "Gram-positive cocci",
+      "Gram-negative rods",
+      "Anaerobes",
+      "Pseudomonas",
+      "MRSA",
+      "Neisseria",
+      "Atypicals",
+      "Mycoplasma"
+    ];
 
-  let filteredAntibiotics = [];
-  let currentQuestionIndex = 0;
-  let score = 0;
-  let questions = [];
+    let filteredAntibiotics = [];
+    let questions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let answered = false;
 
-  function startGame() {
-    score = 0;
-    document.getElementById("score").textContent = `Score: ${score}`;
-    currentQuestionIndex = 0;
-
-    const checkedBoxes = document.querySelectorAll('.filters input[type="checkbox"]:checked');
-    const selectedClasses = Array.from(checkedBoxes).map(cb => cb.value);
-
-    if (selectedClasses.length === 0) {
-      alert("Please select at least one antibiotic class to start the game.");
-      return;
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
     }
 
-    filteredAntibiotics = antibiotics.filter(ab => selectedClasses.includes(ab.class));
+    function startGame() {
+      score = 0;
+      currentQuestionIndex = 0;
+      answered = false;
+      document.getElementById("score").textContent = `Score: ${score}`;
+      document.getElementById("game").innerHTML = "";
 
-    if (filteredAntibiotics.length === 0) {
-      alert("No antibiotics found for the selected classes.");
-      return;
+      const checkedBoxes = document.querySelectorAll('.filters input[type="checkbox"]:checked');
+      const selectedClasses = Array.from(checkedBoxes).map(cb => cb.value);
+
+      if (selectedClasses.length === 0) {
+        alert("Please select at least one antibiotic class to start the game.");
+        return;
+      }
+
+      filteredAntibiotics = antibiotics.filter(ab => selectedClasses.includes(ab.class));
+
+      if (filteredAntibiotics.length === 0) {
+        alert("No antibiotics found for the selected classes.");
+        return;
+      }
+
+      questions = [];
+
+      // Group antibiotics by class
+      const antibioticsByClass = {};
+      selectedClasses.forEach(cls => {
+        antibioticsByClass[cls] = filteredAntibiotics.filter(ab => ab.class === cls);
+      });
+
+      // For each class, generate at least 10 questions total by cycling through antibiotics
+      selectedClasses.forEach(cls => {
+        const abs = antibioticsByClass[cls];
+        let classQuestions = [];
+
+        abs.forEach(ab => {
+          // coverage questions: one per coverage type (positive)
+          ab.covers.forEach(cov => {
+            classQuestions.push({
+              antibiotic: ab,
+              type: "coverage",
+              question: `Does ${ab.name} cover ${cov}?`,
+              correctAnswer: "Yes",
+              options: ["Yes", "No"],
+            });
+            // negative coverage question (pick one random coverage not covered)
+            const negCovs = allCoverage.filter(c => !ab.covers.includes(c));
+            if (negCovs.length > 0) {
+              const negCov = negCovs[Math.floor(Math.random() * negCovs.length)];
+              classQuestions.push({
+                antibiotic: ab,
+                type: "coverage",
+                question: `Does ${ab.name} cover ${negCov}?`,
+                correctAnswer: "No",
+                options: ["Yes", "No"],
+              });
+            }
+          });
+
+          // mechanism question (multiple choice)
+          let wrongMechs = antibiotics
+            .filter(a => a.mechanism !== ab.mechanism)
+            .map(a => a.mechanism);
+          wrongMechs = shuffleArray(wrongMechs).slice(0, 3);
+          let mechOptions = shuffleArray([ab.mechanism, ...wrongMechs]);
+          classQuestions.push({
+            antibiotic: ab,
+            type: "mechanism",
+            question: `What is the mechanism of action of ${ab.name}?`,
+            correctAnswer: ab.mechanism,
+            options: mechOptions,
+          });
+
+          // side effects question (multiple choice)
+          let wrongSEs = antibiotics
+            .filter(a => a.sideEffects !== ab.sideEffects)
+            .map(a => a.sideEffects);
+          wrongSEs = shuffleArray(wrongSEs).slice(0, 3);
+          let seOptions = shuffleArray([ab.sideEffects, ...wrongSEs]);
+          classQuestions.push({
+            antibiotic: ab,
+            type: "sideEffects",
+            question: `What are common side effects of ${ab.name}?`,
+            correctAnswer: ab.sideEffects,
+            options: seOptions,
+          });
+        });
+
+        // If less than 10 questions for the class, duplicate random questions until we have 10
+        while (classQuestions.length < 10) {
+          classQuestions = classQuestions.concat(shuffleArray(classQuestions));
+        }
+        classQuestions = classQuestions.slice(0, 10);
+
+        questions = questions.concat(classQuestions);
+      });
+
+      questions = shuffleArray(questions);
+      showQuestion();
     }
 
-    questions = [];
-    filteredAntibiotics.forEach(ab => {
-      questions.push(generateQuestion(ab));
-    });
+    function showQuestion() {
+      answered = false;
+      if (currentQuestionIndex >= questions.length) {
+        document.getElementById("game").innerHTML = `
+          <h2>🎉 Game Over!</h2>
+          <p>Your final score is ${score} out of ${questions.length}.</p>
+          <button class="filter-btn" onclick="startGame()">Play Again</button>
+        `;
+        return;
+      }
 
-    questions = shuffleArray(questions);
-
-    showQuestion();
-  }
-
-  function generateQuestion(ab) {
-    const types = ["coverage", "mechanism", "sideEffects"];
-    const qType = types[Math.floor(Math.random() * types.length)];
-
-    if (qType === "coverage") {
-      const testCoverage = allCoverage[Math.floor(Math.random() * allCoverage.length)];
-      return {
-        antibiotic: ab,
-        type: "coverage",
-        question: `Does ${ab.name} cover ${testCoverage}?`,
-        correctAnswer: ab.covers.includes(testCoverage),
-        options: ["Yes", "No"],
-      };
-    }
-    else if (qType === "mechanism") {
-      const correctMech = ab.mechanism;
-      let wrongMechs = antibiotics
-        .filter(a => a.mechanism !== correctMech)
-        .map(a => a.mechanism);
-
-      wrongMechs = shuffleArray(wrongMechs).slice(0, 3);
-      const options = shuffleArray([correctMech, ...wrongMechs]);
-      return {
-        antibiotic: ab,
-        type: "mechanism",
-        question: `What is the mechanism of action of ${ab.name}?`,
-        correctAnswer: correctMech,
-        options,
-      };
-    }
-    else if (qType === "sideEffects") {
-      const correctSE = ab.sideEffects;
-      let wrongSEs = antibiotics
-        .filter(a => a.sideEffects !== correctSE)
-        .map(a => a.sideEffects);
-
-      wrongSEs = shuffleArray(wrongSEs).slice(0, 3);
-      const options = shuffleArray([correctSE, ...wrongSEs]);
-      return {
-        antibiotic: ab,
-        type: "sideEffects",
-        question: `What are common side effects of ${ab.name}?`,
-        correctAnswer: correctSE,
-        options,
-      };
-    }
-  }
-
-  function showQuestion() {
-    if (currentQuestionIndex >= questions.length) {
-      document.getElementById("game").innerHTML = `
-        <h2>Game Over!</h2>
-        <p>Your final score is <strong>${score}</strong> out of ${questions.length}.</p>
-        <button class="filter-btn" onclick="startGame()">Play Again</button>
+      const q = questions[currentQuestionIndex];
+      const gameDiv = document.getElementById("game");
+      gameDiv.innerHTML = `
+        <h2>Question ${currentQuestionIndex + 1} / ${questions.length}</h2>
+        <p style="font-weight:bold; margin-bottom: 1rem;">${q.question}</p>
       `;
-      return;
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = option;
+        btn.onclick = () => selectAnswer(option);
+        gameDiv.appendChild(btn);
+      });
     }
 
-    const q = questions[currentQuestionIndex];
-    const gameDiv = document.getElementById("game");
-    gameDiv.innerHTML = `<h3>${q.question}</h3>`;
+    function selectAnswer(selected) {
+      if (answered) return; // prevent multiple answers
+      answered = true;
 
-    q.options.forEach(option => {
-      const btn = document.createElement("button");
-      btn.className = "answer-btn";
-      btn.textContent = option;
-      btn.onclick = () => checkAnswer(option);
-      gameDiv.appendChild(btn);
-    });
-  }
+      const q = questions[currentQuestionIndex];
+      const gameDiv = document.getElementById("game");
+      const buttons = gameDiv.querySelectorAll("button.option");
 
-  function checkAnswer(selected) {
-    const q = questions[currentQuestionIndex];
-    const gameDiv = document.getElementById("game");
-    let isCorrect;
+      // Highlight correct and incorrect answers
+      buttons.forEach(btn => {
+        if (btn.textContent === q.correctAnswer) {
+          btn.classList.add("correct");
+        } else if (btn.textContent === selected) {
+          btn.classList.add("incorrect");
+        }
+        btn.disabled = true;
+      });
 
-    if (q.type === "coverage") {
-      isCorrect = (selected === "Yes") === q.correctAnswer;
-    } else {
-      isCorrect = selected === q.correctAnswer;
+      // Update score if correct
+      if (selected === q.correctAnswer) {
+        score++;
+        document.getElementById("score").textContent = `Score: ${score}`;
+      }
+
+      // Show next button
+      const nextBtn = document.createElement("button");
+      nextBtn.className = "filter-btn";
+      nextBtn.textContent = currentQuestionIndex + 1 === questions.length ? "See Results" : "Next Question";
+      nextBtn.onclick = () => {
+        currentQuestionIndex++;
+        showQuestion();
+      };
+      gameDiv.appendChild(nextBtn);
     }
-
-    if (isCorrect) {
-      score++;
-      gameDiv.innerHTML = `<p class="correct">Correct! 🎉</p>`;
-    } else {
-      let correctText = q.type === "coverage" ? (q.correctAnswer ? "Yes" : "No") : q.correctAnswer;
-      gameDiv.innerHTML = `<p class="incorrect">Incorrect.</p><p><strong>Correct answer:</strong> ${correctText}</p>`;
-    }
-
-    document.getElementById("score").textContent = `Score: ${score}`;
-
-    currentQuestionIndex++;
-    setTimeout(showQuestion, 2200);
-  }
-
-  function shuffleArray(array) {
-    for (let i = array.length -1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i+1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-</script>
+  </script>
 
 </body>
 </html>
