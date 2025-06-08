@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Antibiotic Match Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f0f4f8;
+      text-align: center;
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: auto;
+      max-width: 500px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .option {
+      display: block;
+      padding: 10px;
+      margin: 0.5rem auto;
+      background: #e0e7ff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      width: 90%;
+    }
+    .correct {
+      background-color: #a7f3d0;
+    }
+    .incorrect {
+      background-color: #fecaca;
+    }
+    .score {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    img {
+      width: 60px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <img src="microbe-pixel.png" alt="Microbe Mascot" />
+  <h1>🦠 Antibiotic Match Game</h1>
+  <div class="card" id="game">
+    Loading...
+  </div>
+  <p class="score" id="score">Score: 0</p>
+
+  <script>
+    const antibiotics = [
+      {
+        name: "Amoxicillin",
+        class: "Beta-lactam (Aminopenicillin)",
+        covers: ["Gram-positive cocci", "Gram-negative rods"],
+        wrongClasses: ["Macrolide", "Fluoroquinolone", "Glycopeptide"],
+        wrongCoverage: ["Pseudomonas", "MRSA", "Anaerobes"],
+        mnemonic: "AmOxicillin = Ox takes on Pos (Gram+) and some Neg (Gram- rods)"
+      },
+      {
+        name: "Vancomycin",
+        class: "Glycopeptide",
+        covers: ["Gram-positive cocci", "MRSA"],
+        wrongClasses: ["Beta-lactam", "Macrolide", "Tetracycline"],
+        wrongCoverage: ["Gram-negative rods", "Anaerobes", "Pseudomonas"],
+        mnemonic: "Vancomycin = Big VAN blocks big Gram+ walls (MRSA too!)"
+      },
+      {
+        name: "Clindamycin",
+        class: "Lincosamide",
+        covers: ["Gram-positive cocci", "Anaerobes"],
+        wrongClasses: ["Beta-lactam", "Tetracycline", "Fluoroquinolone"],
+        wrongCoverage: ["Gram-negative rods", "Pseudomonas", "Mycoplasma"],
+        mnemonic: "Clinda = Clean da anaerobes and + bugs above the diaphragm"
+      }
+    ];
+
+    let score = 0;
+    let current = 0;
+    let step = 1; // 1 = pick class, 2 = pick bug coverage
+
+    const gameEl = document.getElementById("game");
+    const scoreEl = document.getElementById("score");
+
+    function shuffle(arr) {
+      return arr.sort(() => Math.random() - 0.5);
+    }
+
+    function renderQuestion() {
+      const abx = antibiotics[current];
+      gameEl.innerHTML = `
+        <h2>Antibiotic: <span style="color:#3b82f6">${abx.name}</span></h2>
+        <p>${step === 1 ? "What class does it belong to?" : "What bug does it cover?"}</p>
+      `;
+
+      const options = step === 1
+        ? shuffle([{ text: abx.class, correct: true }, ...abx.wrongClasses.map(text => ({ text, correct: false }))])
+        : shuffle([
+            ...abx.covers.map(text => ({ text, correct: true })),
+            ...abx.wrongCoverage.map(text => ({ text, correct: false }))
+          ]);
+
+      options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option";
+        btn.textContent = opt.text;
+        btn.onclick = () => handleAnswer(opt.correct, abx);
+        gameEl.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(isCorrect, abx) {
+      const buttons = document.querySelectorAll(".option");
+      buttons.forEach(btn => {
+        if (btn.textContent === abx.class || abx.covers.includes(btn.textContent)) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("incorrect");
+        }
+        btn.disabled = true;
+      });
+
+      if (isCorrect) score++;
+
+      scoreEl.textContent = `Score: ${score}`;
+
+      setTimeout(() => {
+        if (step === 1) {
+          step = 2;
+          renderQuestion();
+        } else {
+          alert(`Mnemonic: ${abx.mnemonic}`);
+          step = 1;
+          current++;
+          if (current < antibiotics.length) {
+            renderQuestion();
+          } else {
+            gameEl.innerHTML = `<h2>Game Over!</h2><p>Your final score: ${score}/${antibiotics.length * 2}</p>`;
+          }
+        }
+      }, 1000);
+    }
+
+    renderQuestion();
+  </script>
+</body>
+</html>
