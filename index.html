@@ -4,578 +4,422 @@
   <meta charset="UTF-8" />
   <title>🦠 Antibiotic Match Game</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Baloo+2&display=swap');
-
     body {
-      font-family: 'Baloo 2', cursive, sans-serif;
-      background: #d4edda; /* pastel green */
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: #d4f4dd; /* pastel green */
       text-align: center;
       padding: 2rem;
-      color: #155724;
       user-select: none;
     }
-    h1 {
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 1rem auto;
+      max-width: 500px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+      font-size: 1.1rem;
+      line-height: 1.4;
+    }
+    .option {
+      display: block;
+      padding: 10px;
+      margin: 0.5rem auto;
+      background: #c3e6cb;
+      border: 2px solid #7bc87c;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 90%;
+      transition: background-color 0.3s ease;
+      font-weight: bold;
+    }
+    .option:hover {
+      background: #a3d9a1;
+    }
+    .selected {
+      background-color: #7bc87c !important;
+      color: white;
+      font-weight: bolder;
+      box-shadow: 0 0 10px #55a144;
+    }
+    .correct {
+      background-color: #34a853 !important;
+      color: white;
+      font-weight: bolder;
+      box-shadow: 0 0 15px #2a7a39;
+    }
+    .incorrect {
+      background-color: #ea4335 !important;
+      color: white;
+      font-weight: bolder;
+      box-shadow: 0 0 15px #a12c23;
+    }
+    .score {
+      margin-top: 1rem;
       font-weight: 900;
-      margin-bottom: 0.5rem;
-      text-shadow: 1px 1px 0 #a8d5a3;
+      font-size: 1.4rem;
+      color: #2a7a39;
     }
-
-    img#mascot {
-      width: 80px;
-      margin-bottom: 1rem;
-      animation: bob 3s ease-in-out infinite;
-    }
-    @keyframes bob {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
     .filters {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       margin-bottom: 1rem;
-      gap: 10px;
+      gap: 1rem;
     }
     .filters label {
-      background: #a8d5a3;
-      padding: 6px 12px;
-      border-radius: 12px;
+      background: #a6d8a8;
+      border-radius: 15px;
+      padding: 0.4rem 1rem;
       cursor: pointer;
-      color: #155724;
-      font-weight: 600;
+      font-weight: 700;
       user-select: none;
-      box-shadow: 1px 1px 4px #9ccc9c;
       transition: background-color 0.3s ease;
     }
     .filters label:hover {
-      background: #7fb77f;
+      background: #7bc87c;
+      color: white;
     }
     .filters input[type="checkbox"] {
-      margin-right: 6px;
+      margin-right: 0.5rem;
       cursor: pointer;
     }
-
-    button#startBtn {
-      background: #8fcf80;
+    button.filter-btn {
+      background: #7bc87c;
       border: none;
-      border-radius: 12px;
-      padding: 14px 28px;
+      padding: 1rem 2rem;
+      border-radius: 15px;
+      font-weight: 900;
       font-size: 1.2rem;
-      font-weight: 700;
-      color: #155724;
       cursor: pointer;
-      box-shadow: 2px 2px 6px #7ca96f;
+      box-shadow: 0 4px 8px #6aa66a;
+      color: white;
       transition: background-color 0.3s ease;
-      user-select: none;
       margin-bottom: 1rem;
     }
-    button#startBtn:hover {
-      background: #7ca96f;
+    button.filter-btn:hover {
+      background: #5f9b5e;
     }
-
-    .card {
-      background: #ffffffdd;
-      border-radius: 20px;
-      padding: 2rem;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      min-height: 300px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .question-text {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      min-height: 70px;
-      user-select: text;
-    }
-
-    .options {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    button.option {
-      background: #c7d2fe;
-      border: none;
-      border-radius: 12px;
-      padding: 12px;
-      font-size: 1.1rem;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 2px 2px 6px #a2a9ff;
-      transition: background-color 0.3s ease, transform 0.15s ease;
-      user-select: none;
-      outline-offset: 3px;
-      outline-color: transparent;
-    }
-    button.option:hover:not(.disabled) {
-      background: #a2a9ff;
-      outline-color: #4f63ff;
-      outline-style: solid;
-      outline-width: 2px;
-    }
-    button.option.disabled {
-      cursor: default;
-      opacity: 0.6;
-    }
-
-    /* Animation: pop on click */
-    button.option.pop {
-      animation: pop 0.2s ease forwards;
-    }
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-
-    /* Animation: shake on wrong */
-    button.option.shake {
-      animation: shake 0.4s ease forwards;
-    }
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-10px); }
-      40%, 80% { transform: translateX(10px); }
-    }
-
-    /* Animation: glow pulse on correct */
-    button.option.correct {
-      animation: glowPulse 1.2s ease forwards;
-      background-color: #a7f3d0 !important;
-      box-shadow: 0 0 15px 3px #4ade80;
-      color: #065f46;
-    }
-    @keyframes glowPulse {
-      0%, 100% { box-shadow: 0 0 15px 3px #4ade80; }
-      50% { box-shadow: 0 0 25px 6px #22c55e; }
-    }
-
-    /* Fade animations for question card */
-    .fade-out {
-      animation: fadeOut 0.5s forwards;
-    }
-    .fade-in {
-      animation: fadeIn 0.5s forwards;
-    }
-    @keyframes fadeOut {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .score-container {
-      margin-top: 1rem;
-      font-weight: 900;
-      font-size: 1.4rem;
-      letter-spacing: 1.5px;
-      color: #256029;
-    }
-
-    /* Progress bar container */
-    .progress-bar-container {
-      width: 90%;
-      height: 14px;
-      background: #a8d5a3;
-      border-radius: 12px;
-      margin: 1rem auto;
-      box-shadow: inset 0 0 6px #7ca96f;
-      overflow: hidden;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #4ade80;
-      width: 0%;
-      border-radius: 12px;
-      transition: width 0.5s ease;
-      box-shadow: 0 0 10px #4ade80;
-    }
-
-    /* Game Over styling */
-    #gameOver {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: #155724;
-      margin-top: 2rem;
-      user-select: none;
+    img {
+      width: 70px;
+      margin-bottom: 1rem;
+      filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.15));
     }
   </style>
 </head>
 <body>
 
-  <img id="mascot" src="microbe-pixel.png" alt="Microbe Mascot" />
+  <img src="microbe-pixel.png" alt="Microbe Mascot" />
   <h1>🦠 Antibiotic Match Game</h1>
-
-  <div class="filters" id="filters">
-    <!-- Classes dynamically populated by JS -->
+  <p>Select an antibiotic class to start the quiz! Each class has 10 questions.</p>
+  <div class="filters" id="classFilters">
+    <!-- dynamically generated -->
   </div>
+  <button class="filter-btn" onclick="startGame()">Start Game</button>
+  <div class="card" id="game"></div>
+  <p class="score" id="score">Score: 0 / 0</p>
 
-  <button id="startBtn">Start Game with Selected Classes</button>
+  <script>
+    // Antibiotic data and questions grouped by class
+    const antibioticClasses = {
+      "Beta-Lactams": {
+        antibiotics: [
+          {name: "Penicillin G/V", mechanism: "Inhibits cell wall synthesis by binding PBPs", coverage: ["Gram-positive cocci", "some gram-negative cocci (Neisseria)"], sideEffects: ["Allergic reactions", "Hemolytic anemia"]},
+          {name: "Amoxicillin/Ampicillin (Aminopenicillins)", mechanism: "Inhibits cell wall synthesis by binding PBPs", coverage: ["Gram-positive cocci", "Gram-negative rods (E. coli, H. influenzae)"], sideEffects: ["Rash", "Pseudomembranous colitis"]},
+          {name: "Nafcillin/Oxacillin/Dicloxacillin (Antistaphylococcal penicillins)", mechanism: "Inhibits cell wall synthesis by binding PBPs", coverage: ["MSSA"], sideEffects: ["Interstitial nephritis", "Allergic reactions"]},
+          {name: "Amoxicillin-clavulanate", mechanism: "Beta-lactam + beta-lactamase inhibitor", coverage: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes"], sideEffects: ["GI upset", "Allergic reactions"]},
+          {name: "Piperacillin-tazobactam", mechanism: "Beta-lactam + beta-lactamase inhibitor", coverage: ["Gram-positive cocci", "Gram-negative rods", "Anaerobes", "Pseudomonas"], sideEffects: ["Allergic reactions", "Thrombocytopenia"]},
+          {name: "Cefazolin (1st Gen Cephalosporin)", mechanism: "Inhibits cell wall synthesis", coverage: ["Gram-positive cocci (MSSA)"], sideEffects: ["Hypersensitivity reactions", "Disulfiram-like reaction"]},
+          {name: "Ceftriaxone (3rd Gen Cephalosporin)", mechanism: "Inhibits cell wall synthesis", coverage: ["Gram-negative rods", "Neisseria"], sideEffects: ["Biliary sludging", "Allergic reactions"]},
+          {name: "Ceftazidime (3rd Gen Cephalosporin)", mechanism: "Inhibits cell wall synthesis", coverage: ["Gram-negative rods including Pseudomonas"], sideEffects: ["Allergic reactions"]},
+          {name: "Cefepime (4th Gen Cephalosporin)", mechanism: "Inhibits cell wall synthesis", coverage: ["Gram-negative rods", "Pseudomonas"], sideEffects: ["Neurotoxicity (rare)"]},
+          {name: "Imipenem/Meropenem (Carbapenems)", mechanism: "Inhibits cell wall synthesis", coverage: ["Broad spectrum including anaerobes and resistant gram-negatives"], sideEffects: ["Seizures (especially imipenem)", "Allergic reactions"]},
+          {name: "Aztreonam (Monobactam)", mechanism: "Inhibits cell wall synthesis", coverage: ["Gram-negative rods including Pseudomonas"], sideEffects: ["Usually well tolerated", "Safe in penicillin allergy"]}
+        ],
+        questions: []
+      },
+      "Aminoglycosides": {
+        antibiotics: [
+          {name: "Gentamicin", mechanism: "Inhibits 30S ribosomal subunit", coverage: ["Aerobic gram-negative rods"], sideEffects: ["Nephrotoxicity", "Ototoxicity"]},
+          {name: "Tobramycin", mechanism: "Inhibits 30S ribosomal subunit", coverage: ["Aerobic gram-negative rods, including Pseudomonas"], sideEffects: ["Nephrotoxicity", "Ototoxicity"]},
+          {name: "Amikacin", mechanism: "Inhibits 30S ribosomal subunit", coverage: ["Broad spectrum aerobic gram-negative rods"], sideEffects: ["Nephrotoxicity", "Ototoxicity"]}
+        ],
+        questions: []
+      },
+      "Macrolides": {
+        antibiotics: [
+          {name: "Erythromycin", mechanism: "Inhibits 50S ribosomal subunit", coverage: ["Atypicals", "Some gram-positives"], sideEffects: ["GI upset", "Prolonged QT"]},
+          {name: "Azithromycin", mechanism: "Inhibits 50S ribosomal subunit", coverage: ["Atypicals", "Some gram-positives", "Neisseria"], sideEffects: ["GI upset", "Prolonged QT"]},
+          {name: "Clarithromycin", mechanism: "Inhibits 50S ribosomal subunit", coverage: ["Atypicals", "Some gram-positives"], sideEffects: ["GI upset", "Prolonged QT"]}
+        ],
+        questions: []
+      },
+      "Tetracyclines": {
+        antibiotics: [
+          {name: "Doxycycline", mechanism: "Inhibits 30S ribosomal subunit", coverage: ["Atypicals", "Rickettsia", "Borrelia"], sideEffects: ["Teeth discoloration", "Photosensitivity"]},
+          {name: "Minocycline", mechanism: "Inhibits 30S ribosomal subunit", coverage: ["Atypicals", "Rickettsia"], sideEffects: ["Teeth discoloration", "Vestibular toxicity"]}
+        ],
+        questions: []
+      },
+      "Fluoroquinolones": {
+        antibiotics: [
+          {name: "Ciprofloxacin", mechanism: "Inhibits DNA gyrase and topoisomerase IV", coverage: ["Gram-negative rods including Pseudomonas"], sideEffects: ["Tendon rupture", "QT prolongation"]},
+          {name: "Levofloxacin", mechanism: "Inhibits DNA gyrase and topoisomerase IV", coverage: ["Gram-negative rods", "Some gram-positives"], sideEffects: ["Tendon rupture", "QT prolongation"]},
+          {name: "Moxifloxacin", mechanism: "Inhibits DNA gyrase and topoisomerase IV", coverage: ["Gram-positive cocci", "Anaerobes"], sideEffects: ["Tendon rupture", "QT prolongation"]}
+        ],
+        questions: []
+      },
+      "Sulfonamides & Trimethoprim": {
+        antibiotics: [
+          {name: "Trimethoprim-Sulfamethoxazole (TMP-SMX)", mechanism: "Inhibits folate synthesis", coverage: ["MRSA", "Some gram-negatives", "Pneumocystis jirovecii"], sideEffects: ["Rash", "Stevens-Johnson syndrome", "Hyperkalemia"]}
+        ],
+        questions: []
+      },
+      "Glycopeptides": {
+        antibiotics: [
+          {name: "Vancomycin", mechanism: "Inhibits cell wall synthesis by binding D-ala-D-ala", coverage: ["Gram-positive cocci including MRSA"], sideEffects: ["Nephrotoxicity", "Red Man Syndrome"]}
+        ],
+        questions: []
+      },
+      "Oxazolidinones": {
+        antibiotics: [
+          {name: "Linezolid", mechanism: "Inhibits 50S ribosomal subunit", coverage: ["MRSA", "VRE"], sideEffects: ["Bone marrow suppression", "Serotonin syndrome"]}
+        ],
+        questions: []
+      },
+      "Clindamycin": {
+        antibiotics: [
+          {name: "Clindamycin", mechanism: "Inhibits 50S ribosomal subunit", coverage: ["Anaerobes (above diaphragm)", "Gram-positive cocci"], sideEffects: ["C. difficile colitis risk"]}
+        ],
+        questions: []
+      },
+      "Metronidazole": {
+        antibiotics: [
+          {name: "Metronidazole", mechanism: "Forms free radicals damaging DNA", coverage: ["Anaerobes (below diaphragm)", "Protozoa (Giardia, Trichomonas)"], sideEffects: ["Disulfiram-like reaction with alcohol"]}
+        ],
+        questions: []
+      },
+      "Polymyxins": {
+        antibiotics: [
+          {name: "Colistin", mechanism: "Disrupts gram-negative bacterial membranes", coverage: ["Multidrug-resistant gram-negative rods"], sideEffects: ["Nephrotoxicity", "Neurotoxicity"]}
+        ],
+        questions: []
+      },
+      "Rifamycins": {
+        antibiotics: [
+          {name: "Rifampin", mechanism: "Inhibits DNA-dependent RNA polymerase", coverage: ["Mycobacteria", "Meningitis prophylaxis"], sideEffects: ["Orange body fluids", "CYP450 inducer"]}
+        ],
+        questions: []
+      },
+      "Nitrofurantoin": {
+        antibiotics: [
+          {name: "Nitrofurantoin", mechanism: "Damages bacterial DNA", coverage: ["Uncomplicated UTIs"], sideEffects: ["Pulmonary fibrosis (long-term)", "Hemolytic anemia in G6PD deficiency"]}
+        ],
+        questions: []
+      }
+    };
 
-  <div class="card" id="game">
-    <div class="question-text" id="questionText"></div>
-    <div class="options" id="options"></div>
-  </div>
-
-  <div class="progress-bar-container" aria-label="Game progress">
-    <div class="progress-bar" id="progressBar"></div>
-  </div>
-
-  <div class="score-container" id="score">Score: 0</div>
-  <div id="gameOver"></div>
-
-<script>
-  // Antibiotics data with extended classes and questions for Step 2 prep
-  const antibiotics = [
-    {
-      name: "Amoxicillin",
-      class: "Beta-lactam (Aminopenicillin)",
-      covers: ["Gram-positive cocci", "Gram-negative rods"],
-      moa: "Inhibits bacterial cell wall synthesis by binding penicillin-binding proteins",
-      sideEffects: ["Allergic reactions", "GI upset", "Rash"],
-      questions: [
-        { 
-          type: "coverage",
-          question: "Which of the following does Amoxicillin cover?",
-          correctAnswers: ["Gram-positive cocci", "Gram-negative rods"],
-          wrongAnswers: ["Anaerobes", "Pseudomonas", "MRSA", "Atypicals"]
-        },
-        {
-          type: "moa",
-          question: "What is the mechanism of action of Amoxicillin?",
-          options: [
-            "Inhibits bacterial cell wall synthesis",
-            "Inhibits protein synthesis at 30S ribosome",
-            "Inhibits DNA gyrase",
-            "Disrupts bacterial membranes"
-          ],
-          correctOption: "Inhibits bacterial cell wall synthesis"
-        },
-        {
-          type: "sideEffects",
-          question: "Which of these is a common side effect of Amoxicillin?",
-          options: ["Allergic reactions", "Ototoxicity", "Nephrotoxicity", "Peripheral neuropathy"],
-          correctOption: "Allergic reactions"
-        }
-      ]
-    },
-    {
-      name: "Vancomycin",
-      class: "Glycopeptide",
-      covers: ["Gram-positive cocci", "MRSA"],
-      moa: "Inhibits cell wall synthesis by binding D-Ala-D-Ala terminus",
-      sideEffects: ["Red man syndrome", "Nephrotoxicity", "Ototoxicity"],
-      questions: [
-        { 
-          type: "coverage",
-          question: "Which of the following does Vancomycin cover?",
-          correctAnswers: ["Gram-positive cocci", "MRSA"],
-          wrongAnswers: ["Gram-negative rods", "Anaerobes", "Pseudomonas", "Atypicals"]
-        },
-        {
-          type: "moa",
-          question: "What is the mechanism of action of Vancomycin?",
-          options: [
-            "Binds D-Ala-D-Ala terminus of cell wall precursors",
-            "Inhibits 50S ribosomal subunit",
-            "Inhibits DNA synthesis",
-            "Inhibits folate synthesis"
-          ],
-          correctOption: "Binds D-Ala-D-Ala terminus of cell wall precursors"
-        },
-        {
-          type: "sideEffects",
-          question: "Which of the following is a known side effect of Vancomycin?",
-          options: ["Red man syndrome", "QT prolongation", "Tendon rupture", "Hemolytic anemia"],
-          correctOption: "Red man syndrome"
-        }
-      ]
-    },
-    {
-      name: "Azithromycin",
-      class: "Macrolide",
-      covers: ["Atypicals"],
-      moa: "Inhibits bacterial protein synthesis by binding 50S ribosomal subunit",
-      sideEffects: ["GI upset", "QT prolongation", "Cholestatic hepatitis"],
-      questions: [
-        { 
-          type: "coverage",
-          question: "Which of the following does Azithromycin cover?",
-          correctAnswers: ["Atypicals"],
-          wrongAnswers: ["Gram-positive cocci", "Gram-negative rods", "MRSA", "Pseudomonas"]
-        },
-        {
-          type: "moa",
-          question: "What is the mechanism of action of Azithromycin?",
-          options: [
-            "Inhibits 50S ribosomal subunit",
-            "Inhibits 30S ribosomal subunit",
-            "Disrupts DNA synthesis",
-            "Inhibits cell wall synthesis"
-          ],
-          correctOption: "Inhibits 50S ribosomal subunit"
-        },
-        {
-          type: "sideEffects",
-          question: "Which of the following is a side effect of Azithromycin?",
-          options: ["QT prolongation", "Nephrotoxicity", "Hypoglycemia", "Peripheral neuropathy"],
-          correctOption: "QT prolongation"
-        }
-      ]
-    },
-    // Add more antibiotics here as needed for Step 2
-  ];
-
-  // Extract unique classes
-  const antibioticClasses = [...new Set(antibiotics.map(ab => ab.class))];
-
-  // DOM elements
-  const filtersDiv = document.getElementById('filters');
-  const startBtn = document.getElementById('startBtn');
-  const gameDiv = document.getElementById('game');
-  const questionText = document.getElementById('questionText');
-  const optionsDiv = document.getElementById('options');
-  const scoreDiv = document.getElementById('score');
-  const progressBar = document.getElementById('progressBar');
-  const gameOverDiv = document.getElementById('gameOver');
-
-  // Game variables
-  let selectedClasses = [];
-  let questionsPool = [];
-  let currentQuestionIndex = 0;
-  let score = 0;
-  let totalQuestions = 10; // per selected class
-  let currentClass = '';
-  let questionsPerClass = {};
-  let gameStarted = false;
-
-  // Populate filters checkboxes
-  function populateFilters() {
-    filtersDiv.innerHTML = '';
-    antibioticClasses.forEach(abClass => {
-      const label = document.createElement('label');
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = abClass;
-      checkbox.name = 'classFilter';
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(abClass));
-      filtersDiv.appendChild(label);
-    });
-  }
-
-  // Utility: shuffle array
-  function shuffle(arr) {
-    for(let i = arr.length - 1; i > 0; i--) {
-      let j = Math.floor(Math.random() * (i+1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
+    // Utility: shuffle array (Fisher-Yates)
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
     }
-    return arr;
-  }
 
-  // Build questions pool for chosen classes
-  function buildQuestionsPool() {
-    questionsPool = [];
-    questionsPerClass = {};
-    selectedClasses.forEach(abClass => {
-      // get antibiotics of this class
-      const classAntibiotics = antibiotics.filter(ab => ab.class === abClass);
-      let classQuestions = [];
-      // gather questions, shuffle and pick up to totalQuestions
-      classAntibiotics.forEach(ab => {
-        ab.questions.forEach(q => {
-          // Attach antibiotic name & class to question for display and tracking
-          classQuestions.push({...q, antibioticName: ab.name, antibioticClass: ab.class});
-        });
+    // Generate questions per class (10 per class)
+    function generateQuestions() {
+      for (const [className, data] of Object.entries(antibioticClasses)) {
+        const q = [];
+
+        const abList = data.antibiotics;
+
+        // For variety, create 10 questions cycling through types: coverage, mechanism, side effect
+
+        let questionCount = 0;
+
+        while (questionCount < 10) {
+          // Randomly pick an antibiotic
+          const ab = abList[Math.floor(Math.random() * abList.length)];
+
+          // Random question type: 0=coverage,1=mechanism,2=side effect
+          const qType = questionCount % 3;
+
+          let questionText = "";
+          let correctAnswer = "";
+          let options = [];
+
+          if (qType === 0) { // coverage question: "Which of the following does X cover?"
+            questionText = `Which of the following does **${ab.name}** cover? (Select one)`;
+            correctAnswer = ab.coverage[0] || "Unknown";
+            options = shuffle([
+              correctAnswer,
+              "MRSA",
+              "Anaerobes",
+              "Pseudomonas",
+              "Atypicals",
+              "Gram-positive cocci",
+              "Gram-negative rods",
+              "Neisseria",
+              "Rickettsia",
+              "Borrelia"
+            ]).slice(0, 4);
+
+            if (!options.includes(correctAnswer)) {
+              options[Math.floor(Math.random() * options.length)] = correctAnswer;
+            }
+          } else if (qType === 1) { // mechanism question
+            questionText = `What is the mechanism of action of **${ab.name}**?`;
+            correctAnswer = ab.mechanism;
+            options = shuffle([
+              correctAnswer,
+              "Inhibits folate synthesis",
+              "Inhibits DNA gyrase",
+              "Inhibits protein synthesis at 30S",
+              "Forms free radicals damaging DNA",
+              "Disrupts bacterial membranes",
+              "Inhibits 50S ribosomal subunit",
+              "Inhibits RNA polymerase"
+            ]).slice(0, 4);
+
+            if (!options.includes(correctAnswer)) {
+              options[Math.floor(Math.random() * options.length)] = correctAnswer;
+            }
+          } else if (qType === 2) { // side effect question
+            questionText = `Which is a common side effect of **${ab.name}**?`;
+            correctAnswer = ab.sideEffects[0] || "Unknown";
+            options = shuffle([
+              correctAnswer,
+              "Tendon rupture",
+              "Nephrotoxicity",
+              "GI upset",
+              "Allergic reaction",
+              "Bone marrow suppression",
+              "Red Man Syndrome",
+              "Photosensitivity"
+            ]).slice(0, 4);
+
+            if (!options.includes(correctAnswer)) {
+              options[Math.floor(Math.random() * options.length)] = correctAnswer;
+            }
+          }
+
+          // Shuffle options and store
+          options = shuffle(options);
+
+          q.push({
+            question: questionText,
+            options,
+            answer: correctAnswer
+          });
+
+          questionCount++;
+        }
+        data.questions = q;
+      }
+    }
+
+    // UI Elements
+    const filtersDiv = document.getElementById("classFilters");
+    const gameDiv = document.getElementById("game");
+    const scoreP = document.getElementById("score");
+    let currentClass = null;
+    let currentQuestions = [];
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // Populate filter checkboxes from classes
+    function setupFilters() {
+      filtersDiv.innerHTML = "";
+      for (const className of Object.keys(antibioticClasses)) {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.value = className;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(className));
+        filtersDiv.appendChild(label);
+      }
+    }
+
+    // Start game
+    function startGame() {
+      // Get selected class
+      const checkedBoxes = [...filtersDiv.querySelectorAll("input[type=checkbox]:checked")];
+      if (checkedBoxes.length === 0) {
+        alert("Please select at least one antibiotic class to start.");
+        return;
+      }
+      // For simplicity, only one class at a time for now (could be expanded)
+      currentClass = checkedBoxes[0].value;
+      const data = antibioticClasses[currentClass];
+      currentQuestions = data.questions;
+      currentQuestionIndex = 0;
+      score = 0;
+      scoreP.textContent = `Score: 0 / ${currentQuestions.length}`;
+      showQuestion();
+    }
+
+    // Show question
+    function showQuestion() {
+      if (currentQuestionIndex >= currentQuestions.length) {
+        gameDiv.innerHTML = `
+          <h2>Game Over!</h2>
+          <p>Your final score for <strong>${currentClass}</strong>:</p>
+          <p><strong>${score} / ${currentQuestions.length}</strong></p>
+          <button onclick="startGame()">Play Again</button>
+        `;
+        return;
+      }
+
+      const q = currentQuestions[currentQuestionIndex];
+
+      let html = `<h2>Question ${currentQuestionIndex + 1} of ${currentQuestions.length}</h2>`;
+      html += `<p style="white-space: pre-wrap;">${q.question.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>`;
+      html += "<div>";
+      q.options.forEach((opt, i) => {
+        html += `<button class="option" onclick="selectAnswer('${opt}')">${opt}</button>`;
       });
-      classQuestions = shuffle(classQuestions).slice(0, totalQuestions);
-      questionsPerClass[abClass] = classQuestions;
-    });
-  }
+      html += "</div>";
 
-  // Flatten all selected class questions into one array (10 each class)
-  function flattenQuestions() {
-    let allQuestions = [];
-    selectedClasses.forEach(cls => {
-      if(questionsPerClass[cls]) {
-        allQuestions = allQuestions.concat(questionsPerClass[cls]);
-      }
-    });
-    return shuffle(allQuestions);
-  }
-
-  // Start the game
-  function startGame() {
-    gameOverDiv.textContent = '';
-    selectedClasses = Array.from(document.querySelectorAll('input[name="classFilter"]:checked')).map(cb => cb.value);
-
-    if(selectedClasses.length === 0) {
-      alert("Please select at least one antibiotic class to start.");
-      return;
-    }
-    // Prepare questions pool for each class
-    buildQuestionsPool();
-
-    // Flatten to single array for game play
-    questionsPool = flattenQuestions();
-
-    if(questionsPool.length === 0) {
-      alert("No questions found for selected classes.");
-      return;
+      gameDiv.innerHTML = html;
+      scoreP.textContent = `Score: ${score} / ${currentQuestions.length}`;
     }
 
-    currentQuestionIndex = 0;
-    score = 0;
-    updateScore();
-    updateProgressBar();
-    gameStarted = true;
+    // Handle answer selection
+    function selectAnswer(selected) {
+      const q = currentQuestions[currentQuestionIndex];
+      const buttons = [...gameDiv.querySelectorAll(".option")];
+      buttons.forEach(btn => btn.disabled = true);
 
-    startBtn.disabled = true;
-    filtersDiv.querySelectorAll('input').forEach(cb => cb.disabled = true);
-
-    showQuestion();
-  }
-
-  // Update score UI with smooth animation
-  function updateScore() {
-    let start = +scoreDiv.textContent.split(' ')[1];
-    let end = score;
-    let startTime = null;
-
-    function animateScore(time) {
-      if (!startTime) startTime = time;
-      const progress = Math.min((time - startTime) / 500, 1);
-      const current = Math.floor(progress * (end - start) + start);
-      scoreDiv.textContent = `Score: ${current}`;
-      if (progress < 1) {
-        requestAnimationFrame(animateScore);
-      }
-    }
-    requestAnimationFrame(animateScore);
-  }
-
-  // Update progress bar UI
-  function updateProgressBar() {
-    const progressPercent = ((currentQuestionIndex) / questionsPool.length) * 100;
-    progressBar.style.width = `${progressPercent}%`;
-  }
-
-  // Show question with fade in animation
-  function showQuestion() {
-    if(currentQuestionIndex >= questionsPool.length) {
-      endGame();
-      return;
-    }
-    const q = questionsPool[currentQuestionIndex];
-
-    // Fade out current content, then update text and fade in
-    gameDiv.classList.add('fade-out');
-    setTimeout(() => {
-      // Question text varies by type
-      if(q.type === 'coverage') {
-        questionText.textContent = `${q.antibioticName}: ${q.question}`;
-        // Build options: mix correct + wrong shuffled
-        const options = shuffle([...q.correctAnswers, ...q.wrongAnswers]);
-        buildOptions(options, q.correctAnswers);
-      } else if(q.type === 'moa' || q.type === 'sideEffects') {
-        questionText.textContent = `${q.antibioticName}: ${q.question}`;
-        buildOptions(q.options, [q.correctOption]);
-      }
-      gameDiv.classList.remove('fade-out');
-      gameDiv.classList.add('fade-in');
-      // Remove fade-in class after animation
-      setTimeout(() => gameDiv.classList.remove('fade-in'), 600);
-    }, 500);
-    updateProgressBar();
-  }
-
-  // Build clickable options buttons
-  function buildOptions(optionsArray, correctAnswersArray) {
-    optionsDiv.innerHTML = '';
-    optionsArray.forEach(option => {
-      const btn = document.createElement('button');
-      btn.className = 'option';
-      btn.textContent = option;
-      btn.onclick = () => handleAnswer(btn, correctAnswersArray, option);
-      optionsDiv.appendChild(btn);
-    });
-  }
-
-  // Handle answer click with animations & scoring
-  function handleAnswer(button, correctAnswers, selectedOption) {
-    if(button.classList.contains('disabled')) return; // ignore if already answered
-
-    // Pop animation on click
-    button.classList.add('pop');
-
-    // Disable all buttons
-    const allButtons = optionsDiv.querySelectorAll('button.option');
-    allButtons.forEach(b => b.classList.add('disabled'));
-
-    const isCorrect = correctAnswers.includes(selectedOption);
-
-    if(isCorrect) {
-      score++;
-      updateScore();
-      // Glow pulse correct button
-      button.classList.add('correct');
-
-      // After short delay, go to next question
-      setTimeout(() => {
-        currentQuestionIndex++;
-        showQuestion();
-      }, 1200);
-    } else {
-      // Shake the wrong button
-      button.classList.add('shake');
-
-      // Highlight correct buttons
-      allButtons.forEach(b => {
-        if(correctAnswers.includes(b.textContent)) {
-          b.classList.add('correct');
+      // Highlight correct and incorrect
+      buttons.forEach(btn => {
+        if (btn.textContent === q.answer) {
+          btn.classList.add("correct");
+        }
+        if (btn.textContent === selected && selected !== q.answer) {
+          btn.classList.add("incorrect");
         }
       });
 
-      // After delay, go next question without score increment
+      if (selected === q.answer) {
+        score++;
+      }
+
+      scoreP.textContent = `Score: ${score} / ${currentQuestions.length}`;
+
+      // Next question after 1.5 sec delay
       setTimeout(() => {
         currentQuestionIndex++;
         showQuestion();
       }, 1500);
     }
 
-    // Remove pop after animation to keep style clean
-    button.addEventListener('animationend', () => {
-      button.classList.remove('pop');
-      button.classList.remove('shake');
-    }, {once:true});
-  }
+    // Initialize
+    generateQuestions();
+    setupFilters();
 
-  // End of game summary
-  function endGame() {
-    gameStarted = false;
-    startBtn.disabled = false;
-    filtersDiv.querySelectorAll('input').forEach(cb => cb.disabled = false);
-    questionText.textContent = '';
-    optionsDiv.innerHTML = '';
-    progressBar.style.width = '100%';
-    gameOverDiv.textContent = `🎉 Game Over! You scored ${score} out of ${questionsPool.length}!`;
-  }
-
-  // Event listeners
-  startBtn.addEventListener('click', startGame);
-
-  // Initialize filters on load
-  populateFilters();
-</script>
-
+  </script>
 </body>
 </html>
